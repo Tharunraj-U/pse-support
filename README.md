@@ -125,3 +125,9 @@ More detail is in [`docs/architecture.md`](docs/architecture.md).
 | Things are in a strange state | `make reset` wipes the database and volumes and starts clean. |
 | Grafana shows no data | Wait about 30 seconds after start-up, then refresh. Check that targets are UP at http://localhost:9090/targets. Make sure the time range in Grafana covers the period you are looking at. |
 | A service is not responding | `make ps` to see its state, then `docker compose logs <service>`. |
+
+## Product support assignment
+
+The completed incident investigation, priorities, customer communication drafts, escalation decisions, and final checklist are in [`SUBMISSION.md`](SUBMISSION.md). Supporting evidence for each incident is in [`evidence/`](evidence/).
+
+The submission distinguishes confirmed lab findings from unverified production reports. Customer messages are drafts only; no real emails were sent.
