@@ -4,8 +4,8 @@
 
 - **Name:** Tharun Raj U
 - **Date submitted:** 14/11/2026
-- **Repository link:** https://github.com/sanjay-complyance/pse-support-lab
-- **Total time spent (real time):** Not calculable accurately; the start time was not captured. Work-log end timestamp recorded as 2026-11-14 12:32:04 +05:30.
+- **Repository link:** https://github.com/Tharunraj-U/pse-support
+- **Total time spent (real time):** 3 hours (as reported by me).
 
 > All acknowledgement and customer reply times below use the exercise clock: Monday, 16 November 2026, Asia/Dubai (UTC+4). Actual working time is recorded separately.
 
@@ -17,7 +17,7 @@
 4. **Incident 4 — Bluepeak / Sahara Medical:** A 40-invoice batch with blank ASP references and partial receipt exposed a likely unhandled rate-limit response and required careful no-duplicate reconciliation.
 5. **Incident 5 — Ghaf Tree Café:** A single-customer date-format rejection was investigated to provide a safe, simple correction without guessing locale-specific dates.
 
-All five incidents are documented. Investigation depth and confidence are stated separately where the matching production import or event-time records are absent.
+I investigated all five inbox items. Where the original production records were not available, I have said so rather than treating a lab result as proof of what happened to the customer.
 
 ---
 
@@ -430,7 +430,7 @@ Product Support Engineer
 
 ## Prioritisation
 
-The requested investigation order was followed: Oasis first, then the remaining incidents one at a time after approval. Final evidence-backed triage is:
+I started with Oasis, as requested, and then worked through the other cases one at a time. My final priorities are:
 
 1. **Incident 2 — P1 provisional:** Critical restart alert plus reports of multiple customers with intermittent 502s and stalled invoices; page L3 on-call and re-prioritise if production evidence narrows the impact.
 2. **Incident 1 — P2 provisional:** Major upload delay and possible timeout/retry confusion with month-end impact; do not re-upload before original import reconciliation.
@@ -438,38 +438,35 @@ The requested investigation order was followed: Oasis first, then the remaining 
 4. **Incident 4 — P2 provisional:** Partial receipt reported for a 40-invoice batch before a payment run; likely 429 handling gap, but exact outcomes require the original import and ASP records.
 5. **Incident 5 — P3:** One customer's dates use a documented unsupported text format; provide conversion steps and verify the original status before upload.
 
-Acknowledgements were drafted within the selected first-response targets: Oasis 09:07; API alert 09:44 and Priya 09:52; Al Noor 10:18; Sahara 11:33; Ghaf 12:13 GST. Incident 2's internal alert and Priya's report have separate acknowledgement drafts.
+I drafted each acknowledgement within its selected response target: Oasis at 09:07; the API alert at 09:44 and Priya at 09:52; Al Noor at 10:18; Sahara at 11:33; and Ghaf at 12:13 GST. The API alert and Priya's report have separate replies.
 
 ## What I would do differently
 
-- Capture each original import ID, request timestamp, and invoice list at first contact, before any retry is considered.
-- Separate import acceptance, ASP acknowledgement, and buyer-side delivery in every investigation; HTTP 201 and Submitted are not proof of ASP acceptance.
-- Query durable event history and ASP records before advising recovery, and preserve the original logs and metric time range.
-- Record the difference between the exercise incident date and the local lab snapshot immediately; do not use a healthy or empty pre-incident lab state to disprove a later production report.
-- Give a precise next-update time in every acknowledgement and keep customer ownership after escalation.
+- Ask for the import ID and upload time as soon as a customer reports a problem. That makes it easier to match their invoices to portal and ASP records.
+- Check the individual invoice status and ASP reference before advising a retry. An import response or a Submitted status does not prove that the ASP accepted every invoice.
+- Keep production reports separate from older lab results. The lab snapshot did not contain records for several of the reported November uploads.
+- Give customers a specific time for the next update and keep ownership after escalating to Engineering.
 
 ## What I learned / what I would need to learn
 
-- The upload endpoint parses and validates synchronously, but ASP submission is asynchronous; an import-level 201 does not mean every invoice was accepted.
-- A web proxy timeout can end the browser wait while a background API operation continues; idempotency and reconciliation are essential before retrying.
-- ASP rate limits, `Retry-After`, queue durability, and per-invoice ASP message IDs determine whether a Submitted state is safe to resend.
-- Invoice totals can disagree by cents when rounded line net/VAT values are combined with a gross total calculated from unrounded amounts.
-- Date-only values should be normalized without guessing locale; the file's representation matters as well as the calendar date.
-- I used read-only PostgreSQL queries, Prometheus HTTP queries, retained Docker logs, source inspection, and in-memory XLSX XML parsing. I would still need production event-time logs, restart/OOM metadata, affected import IDs, and ASP receipts to confirm the unverified timelines.
+- An import can finish before its invoices finish submitting to the ASP. A successful import response does not confirm delivery of every invoice.
+- If a browser request times out, the API may still be processing it. Retrying before checking import history can create duplicate-number problems.
+- ASP throttling needs to be handled explicitly. A Submitted status with no reference needs reconciliation before anyone resends the invoice.
+- Small rounding differences can fail the ASP's total check when the portal calculates net, VAT, and gross using different rounding steps.
+- Date formats can be ambiguous across regions, so the system should not guess what a slash-formatted date means.
+- I used PostgreSQL queries, Prometheus, Docker logs, source code, and the supplied Excel files. To confirm the reported production events, I would still need the original import IDs, event-time logs, and ASP records.
 
 ## Time log (real time)
 
 | Date | From–to | What I worked on |
 |---|---|---|
-| 14 Nov 2026 | Start not captured – 12:32:04 +05:30 | Final incident investigation, evidence documentation, and submission validation; end timestamp read from the local system clock. |
+| 14 Nov 2026 | 3 hours total; individual start/end times not recorded | Incident investigations, evidence review, customer drafts, and submission preparation. Total time is my reported working time. |
 
-The start time was not captured, so elapsed hours/minutes cannot be calculated accurately and have not been estimated. Do not use the exercise clock in this section.
+This is real working time, not the exercise clock used for customer response and SLA times.
 
 ## AI usage disclosure
 
-I used GitHub Copilot to help navigate the repository, identify relevant code paths, run read-only database and Prometheus queries, inspect sample workbook contents, calculate expected outcomes, and draft the investigation notes and customer communications.
-
-I checked technical conclusions against the supplied source code, actual workbook values, current local database records, retained logs, and live lab metrics. Hypotheses are labelled as such where original production records were unavailable. No customer email was sent and no database reset or mutation was performed. I reviewed the previously completed controlled Oasis replay as existing evidence and did not run any additional upload replay.
+I used GitHub Copilot to help find relevant code, inspect the lab evidence, run read-only queries, and prepare drafts. I checked the findings against the source, workbook values, database, logs, and metrics. I have labelled conclusions that could not be confirmed from the available production records. I did not send customer emails, change the database, or run another upload replay. I reviewed the controlled Oasis replay that had already been completed.
 
 ## Final deliverables checklist
 
@@ -480,7 +477,7 @@ I checked technical conclusions against the supplied source code, actual workboo
 - [x] Engineering escalation drafts for product defects and a documented no-escalation decision for the date-format case.
 - [x] Sanitized evidence notes: [Oasis](evidence/oasis-investigation.md), [API restart](evidence/incident-2-platform.md), [Al Noor](evidence/incident-3-al-noor.md), [Sahara](evidence/incident-4-bluepeak-sahara.md), and [Ghaf](evidence/incident-5-ghaf-cafe.md).
 - [x] AI assistance disclosed.
-- [x] Repository URL recorded from the configured Git origin; no commit or push was performed.
-- [ ] Candidate to enter actual real-time hours before final submission; this value was not available to the assistant and has not been invented.
+- [x] Repository URL recorded and assignment pushed to `main`.
+- [x] Total time recorded as 3 hours, as reported by me.
 
-**Git status at completion:** `SUBMISSION.md` modified; `evidence/` added; `.vscode/` was already untracked before this work and was left unchanged. No source code was modified and no commit was created.
+**Git status at completion:** The assignment commit is on `main` and pushed to `origin/main`. The pre-existing `.vscode/` folder remains untracked and was not included.
